@@ -1,0 +1,36 @@
+service: dns-verify
+provider:
+  name: aws
+  apiKeys:
+    - auth_${opt:stage}
+  runtime: python3.6
+  stage: ${opt:stage, env:STAGE, 'development'}
+  region: ${opt:region, 'eu-west-1'}
+  memorySize: 128
+  timeout: 30
+  environment:
+    STAGE: ${opt:stage, self:provider.stage}
+    REGION: ${opt:region, self:provider.region}
+
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    noDeploy:
+      - pytest
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - python-dateutil
+
+functions:
+  valid_cname:
+    handler: aws_lambda.validate_cname
+    events:
+      - http:
+          path: validate-cname
+          method: POST
+          cors: true
+          private: true
