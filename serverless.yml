@@ -2,7 +2,7 @@ service: dns-verify
 provider:
   name: aws
   apiKeys:
-    - auth_${opt:stage}
+    - auth_${self:service.name}_${opt:stage}
   runtime: python3.6
   stage: ${opt:stage, env:STAGE, 'development'}
   region: ${opt:region, 'eu-west-1'}
